@@ -1,0 +1,119 @@
+name: Build & Release Beta APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. 0.1.0-beta.1)'
+        required: true
+        default: '0.1.0-beta.1'
+      unity_version:
+        description: 'Unity version'
+        required: true
+        default: '6000.0.32f1'
+        type: choice
+        options:
+          - '6000.0.32f1'
+          - '6000.0.25f1'
+          - '2022.3.51f1'
+          - '2022.3.45f1'
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  PROJECT_PATH: '.'
+
+jobs:
+  build-android:
+    name: Build Quest 2 APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      # ── Checkout ──
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # ── Cache ──
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-Android-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-Android-
+
+      # ── Build ──
+      - name: Build Android APK
+        uses: game-ci/unity-builder@v4
+        with:
+          targetPlatform: Android
+          unityVersion: ${{ inputs.unity_version }}
+          buildName: VisionSpace
+          androidAppBundle: false
+          androidExportType: androidPackage
+          # ARM64 only for Quest 2
+          customParameters: >-
+            -buildTarget Android
+            -scripting-backend il2cpp
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+      # ── Rename APK ──
+      - name: Rename APK
+        run: |
+          APK=$(find build/Android -name "*.apk" | head -1)
+          if [ -z "$APK" ]; then
+            echo "::error::No APK found in build output"
+            exit 1
+          fi
+          cp "$APK" "VisionSpace-${{ inputs.version }}.apk"
+          echo "APK_PATH=VisionSpace-${{ inputs.version }}.apk" >> $GITHUB_ENV
+          ls -lh "$APK"
+
+      # ── Create Beta Release ──
+      - name: Create Beta Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          name: "Vision Space v${{ inputs.version }} (Beta)"
+          prerelease: true
+          generate_release_notes: true
+          body: |
+            ## 🚀 Vision Space v${{ inputs.version }} — Beta Release
+
+            **Apple Vision Pro–inspired spatial launcher for Meta Quest 2**
+
+            ### Installation
+            ```bash
+            adb install -r VisionSpace-${{ inputs.version }}.apk
+            ```
+            Then open from: **Unknown Sources → Vision Space**
+
+            ### Requirements
+            - Meta Quest 2 (Developer Mode enabled)
+            - ADB installed on your computer
+
+            ### ⚠️ Beta Notice
+            This is a pre-release build. Expect rough edges.
+            Report issues at https://github.com/MetaQ2/VisionSpace/issues
+
+            ---
+            *Built with Unity ${{ inputs.unity_version }} • Meta XR SDK • OpenXR*
+          files: |
+            ${{ env.APK_PATH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Upload artifact (backup) ──
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VisionSpace-${{ inputs.version }}
+          path: ${{ env.APK_PATH }}
+          retention-days: 30
