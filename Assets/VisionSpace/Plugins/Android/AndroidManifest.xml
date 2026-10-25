@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.visionspace.launcher">
+
+    <!-- Package visibility for Android 11+ (API 30+) app discovery -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="com.oculus.intent.category.VR" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Hand tracking feature (not required, graceful fallback) -->
+    <uses-feature android:name="oculus.software.handtracking" android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:label="Vision Space"
+        android:icon="@mipmap/app_icon">
+
+        <activity
+            android:name="com.unity3d.player.UnityPlayerActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|density|uiMode"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.oculus.intent.category.VR" />
+            </intent-filter>
+
+            <!-- Meta Quest VR metadata -->
+            <meta-data android:name="com.oculus.vr.focusaware" android:value="true" />
+        </activity>
+
+        <!-- Meta Quest supported devices -->
+        <meta-data android:name="com.oculus.supportedDevices" android:value="quest2|quest3|questpro" />
+        <meta-data android:name="com.oculus.handtracking.frequency" android:value="HIGH" />
+        <meta-data android:name="com.oculus.handtracking.version" android:value="V2.0" />
+    </application>
+</manifest>
