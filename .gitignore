@@ -43,3 +43,8 @@ crashlytics-build.properties
 
 # Asset Store
 /[Aa]ssets/AssetStoreTools*
+
+# Local logs & native build artifacts
+.utmp/
+build.log
+build/

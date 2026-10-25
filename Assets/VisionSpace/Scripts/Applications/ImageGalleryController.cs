@@ -78,7 +78,7 @@ namespace VisionSpace.Applications
             {
                 byte[] data = File.ReadAllBytes(path);
                 Texture2D tex = new Texture2D(2, 2);
-                tex.LoadImage(data);
+                ImageConversion.LoadImage(tex, data);
 
                 if (fullImageDisplay != null)
                 {
@@ -122,7 +122,7 @@ namespace VisionSpace.Applications
                 {
                     byte[] data = File.ReadAllBytes(_imagePaths[i]);
                     Texture2D tex = new Texture2D(2, 2);
-                    tex.LoadImage(data);
+                    ImageConversion.LoadImage(tex, data);
 
                     // Downsample for thumbnail
                     if (tex.width > 128 || tex.height > 128)

@@ -99,7 +99,7 @@ namespace VisionSpace.Launcher
                         activityName = actName,
                         source = AppSource.Discovered,
                         isVRApp = IsVRPackage(pkgName),
-                        isSideloaded = IsSideloadedPackage(pkgName, packageManager)
+                        isSideloaded = IsSideloadedPackage(packageManager, pkgName)
                     };
 
                     // Try to extract app icon as Texture2D
