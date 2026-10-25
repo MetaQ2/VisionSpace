@@ -66,11 +66,17 @@ namespace VisionSpace.Core
             if (environmentManager == null)
                 environmentManager = FindOrCreate<EnvironmentManager>("EnvironmentManager");
             if (appGrid == null)
+            {
                 appGrid = FindOrCreate<AppGridController>("AppGrid");
+                appGrid.transform.localPosition = new Vector3(0, 0, 1.4f);
+            }
             if (dock == null)
                 dock = FindOrCreate<DockController>("Dock");
             if (controlCenter == null)
+            {
                 controlCenter = FindOrCreate<ControlCenterController>("ControlCenter");
+                controlCenter.transform.localPosition = new Vector3(0, 0.35f, 1.2f);
+            }
         }
 
         private T FindOrCreate<T>(string name) where T : MonoBehaviour

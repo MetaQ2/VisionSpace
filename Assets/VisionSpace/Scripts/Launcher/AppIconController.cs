@@ -173,17 +173,15 @@ namespace VisionSpace.Launcher
             labelObj.transform.SetParent(transform);
             labelObj.transform.localPosition = new Vector3(0, -_baseScale * 0.65f, 0);
             labelObj.transform.localRotation = Quaternion.identity;
-            labelObj.transform.localScale = Vector3.one * 0.15f;
+            labelObj.transform.localScale = Vector3.one * 0.012f;
 
-            var tmp = labelObj.AddComponent<TextMeshPro>();
-            tmp.text = text;
-            tmp.fontSize = 2f;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = new Color(0.9f, 0.9f, 0.95f, 0.9f);
-            tmp.enableWordWrapping = true;
-            tmp.overflowMode = TextOverflowModes.Ellipsis;
-            tmp.rectTransform.sizeDelta = new Vector2(6f, 2f);
-            labelText = tmp;
+            var textMesh = labelObj.AddComponent<TextMesh>();
+            textMesh.text = text;
+            textMesh.fontSize = 24;
+            textMesh.characterSize = 1f;
+            textMesh.alignment = TextAlignment.Center;
+            textMesh.anchor = TextAnchor.MiddleCenter;
+            textMesh.color = new Color(0.9f, 0.9f, 0.95f, 0.95f);
         }
     }
 }
